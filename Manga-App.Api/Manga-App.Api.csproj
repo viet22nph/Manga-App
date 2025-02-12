@@ -8,7 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Manga-App.Application\Manga-App.Application.csproj" />
+    <ProjectReference Include="..\Manga-App.Contract\Manga-App.Contract.csproj" />
+    <ProjectReference Include="..\Manga-App.Domain\Manga-App.Domain.csproj" />
+    <ProjectReference Include="..\Manga-App.Infrastructure\Manga-App.Infrastructure.csproj" />
+    <ProjectReference Include="..\Manga-App.Persistence\Manga-App.Persistence.csproj" />
+    <ProjectReference Include="..\Manga-App.Presentation\Manga-App.Presentation.csproj" />
   </ItemGroup>
 
 </Project>
