@@ -1,4 +1,5 @@
 ﻿
+using MangaApp.Contract.Extensions;
 using MangaApp.Domain.Abstractions;
 
 namespace MangaApp.Domain.Entities;
@@ -21,5 +22,6 @@ public class Genre : EntityBase<int>
     {
         Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
         Description = !string.IsNullOrWhiteSpace(description) ? description : throw new ArgumentNullException(nameof(Description));
+        Slug = name.ToSlug();
     }
 }

@@ -1,11 +1,14 @@
 using MangaApp.Api.DependencyInjection.Extensions;
+using MangaApp.Persistence;
 using MangaApp.Persistence.DependencyInjections.Extentions;
+using MangaApp.Persistence.SeedData;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddScoped<SeedData>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -63,5 +66,23 @@ app.UseStaticFiles();
 
 app.UseCors(MyAllowSpecificOrigins).UseForwardedHeaders();
 app.MapControllers();
+//Seed
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+    var seed = services.GetService<SeedData>();
+    if (seed != null)
+    {
+        await seed.SeedDataAsync();
+    }
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred during migration");
+}
 
 app.Run();
