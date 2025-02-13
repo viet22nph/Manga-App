@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Manga-App.Domain\Manga-App.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

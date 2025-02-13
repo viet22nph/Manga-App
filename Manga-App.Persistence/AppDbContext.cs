@@ -58,5 +58,9 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, Microsoft.
     public DbSet<Chapter> Chapters { get; set; }
     public DbSet<ChapterImage> ChapterImages { get; set; }
     public DbSet<Country> Countries { get; set; }
+
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<Resource> Resources { get; set; }
     
 }

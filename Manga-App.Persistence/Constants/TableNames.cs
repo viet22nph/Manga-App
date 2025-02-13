@@ -20,4 +20,9 @@ public static class TableNames
     internal const string Country = nameof(Country);
     internal const string MangaGenre = nameof(MangaGenre);
     internal const string Genre = nameof(Genre);
+
+    // role permission
+    internal const string Permission = nameof(Permission);
+    internal const string RolePermission = nameof(RolePermission);
+    internal const string Resource = nameof(Resource);
 }

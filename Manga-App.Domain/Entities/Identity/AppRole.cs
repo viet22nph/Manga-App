@@ -9,6 +9,7 @@ public class AppRole : IdentityRole<Guid>, IAuditable
     public string? Description { get; set; }
     public virtual ICollection<IdentityRoleClaim<Guid>>? Claims { get; set; }
     public ICollection<AppUserRole>? UserRoles { get; set; }
+    public virtual ICollection<RolePermission> RolePermissions { get; set; }
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedDate { get; set; }
     public Guid CreatedBy { get; set; }
