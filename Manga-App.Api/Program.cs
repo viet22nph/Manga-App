@@ -1,4 +1,5 @@
 using MangaApp.Api.DependencyInjection.Extensions;
+using MangaApp.Application.DependencyInjections.Extensions;
 using MangaApp.Persistence;
 using MangaApp.Persistence.DependencyInjections.Extentions;
 using MangaApp.Persistence.SeedData;
@@ -13,10 +14,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services
+    .AddControllers()
+    .AddApplicationPart(MangaApp.Presentation.AssemblyReference.Assembly);
 
 builder.Services.AddSqlServer();
 builder.Services.AddIdentity();
 builder.Services.ConfigureSqlServerRetryOption(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
