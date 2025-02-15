@@ -20,8 +20,11 @@ builder.Services
 
 builder.Services.AddSqlServer();
 builder.Services.AddIdentity();
+
+builder.Services.AddCacheRedis(builder.Configuration);
 builder.Services.ConfigureSqlServerRetryOption(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddMediatRApplication();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>

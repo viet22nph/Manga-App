@@ -1,4 +1,6 @@
 ﻿
+using MangaApp.Contract.Shares.Errors;
+
 namespace MangaApp.Contract.Abstractions;
 
 public interface IResult<out TValue> : IResult

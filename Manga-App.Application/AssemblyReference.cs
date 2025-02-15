@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Manga_App.Application;
+namespace MangaApp.Application;
 
 public class AssemblyReference
 {
