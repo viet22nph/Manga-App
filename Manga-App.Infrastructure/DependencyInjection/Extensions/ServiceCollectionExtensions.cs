@@ -56,5 +56,11 @@ public static class ServiceCollectionExtensions
         services.AddAuthorization();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
     }
-   
+    public static void AddCacheRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<RedisOptions>(configuration.GetSection(nameof(RedisOptions)));
+
+        services.AddScoped<IRedisConnectionWrapper, RedisConnectionWrapper>();
+        services.AddScoped<ICacheManager, RedisCacheManager>();
+    }
 }
