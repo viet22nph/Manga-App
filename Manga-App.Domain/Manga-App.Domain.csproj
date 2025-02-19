@@ -12,8 +12,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Manga-App.Contract\Manga-App.Contract.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstractions\Repositories\" />
-  </ItemGroup>
 
 </Project>

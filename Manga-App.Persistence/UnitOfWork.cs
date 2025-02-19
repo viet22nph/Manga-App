@@ -29,5 +29,17 @@ public class UnitOfWork : IUnitOfWork
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-   
+    private IMangaRepository _mangaRepository;
+    public IMangaRepository MangaRepository
+    {
+        get
+        {
+            if (_mangaRepository == null)
+            {
+                _mangaRepository = new MangaRepository(_context);
+            }
+            return _mangaRepository;
+        }
+    }
+
 }

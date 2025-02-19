@@ -17,12 +17,15 @@ public static class ServiceCollectionExtensions
 {
     public static void AddSqlServer(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
+        services.AddSingleton<EntityAuditInterceptor>();
         services.AddDbContextPool<DbContext, AppDbContext>((provider, builder) =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
             var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
             var options = optionsMonitor.CurrentValue;
-            
+
+            var interceptor = provider.GetRequiredService<EntityAuditInterceptor>();
             builder.EnableDetailedErrors(true)
                 .EnableSensitiveDataLogging(true)
                 .UseLazyLoadingProxies(false)
@@ -39,7 +42,7 @@ public static class ServiceCollectionExtensions
                         );
                         sqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.GetName().Name);
                     })
-                .AddInterceptors();
+                .AddInterceptors(interceptor);
         });
 
         services.AddDbContext<AppDbContext>(ServiceLifetime.Transient);

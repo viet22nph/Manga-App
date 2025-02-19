@@ -1,8 +1,12 @@
 ﻿
+using MangaApp.Contract.Shares;
 using MangaApp.Contract.Shares.Enums;
+using MangaApp.Contract.Shares.Errors;
 using MangaApp.Domain.Abstractions;
 using MangaApp.Domain.Entities.Identity;
 using System.Diagnostics.Metrics;
+using System.Globalization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MangaApp.Domain.Entities;
 
@@ -69,14 +73,18 @@ public class Manga : EntityAuditBase<Guid>
         MangaStatus status,
         ContentRating contentRating,
         string slug,
-        int? year
+        int? year,
+        bool? IsPublished = false 
     )
     {
-        // trim data
-        title = title.Trim();
-        anotherTitle = anotherTitle?.Trim();
-        author = author?.Trim();
-        thumbnail = thumbnail.Trim();
+
+        TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
+
+        // trim data 
+        title = textInfo.ToTitleCase(title.ToLower().Trim()); 
+        anotherTitle = 
+            string.IsNullOrEmpty(anotherTitle) ? anotherTitle: textInfo.ToTitleCase(anotherTitle!.ToLower().Trim());
+        author = string.IsNullOrEmpty(description) ? description :textInfo.ToTitleCase(description!.ToLower().Trim());
         return new Manga
         {
             Title = title,
@@ -91,7 +99,7 @@ public class Manga : EntityAuditBase<Guid>
             Year = year,
             CreatedDate = DateTimeOffset.UtcNow,
             ApprovalStatus = ApprovalStatus.Pending,
-            IsPublished = false,
+            IsPublished = IsPublished?? false,
         };
     }
     public void SetStoryGenresByGenreIds(List<int>? genreIds)
@@ -107,9 +115,98 @@ public class Manga : EntityAuditBase<Guid>
         {
             _mangaGenres.Add(new MangaGenre
             {
-                MangaId = this.Id, // Assuming the Story entity has an Id
+                MangaId = this.Id, // Assuming the manga entity has an Id
                 GenreId = genreId
             });
         }
     }
+
+    public void Update(
+        string title,
+        string? anotherTitle,
+        string? description,
+        string? author,
+        string thumbnail,
+        int countryId,
+        MangaStatus status,
+        ContentRating contentRating,
+        string slug,
+        int? year)
+    {
+        TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
+
+        // trim data 
+        title = textInfo.ToTitleCase(title.ToLower().Trim());
+        anotherTitle =
+            string.IsNullOrEmpty(anotherTitle) ? anotherTitle : textInfo.ToTitleCase(anotherTitle!.ToLower().Trim());
+        author = string.IsNullOrEmpty(description) ? description : textInfo.ToTitleCase(description!.ToLower().Trim());
+        Title = title;
+        AnotherTitle = anotherTitle;
+        Description = description;
+        Author = author;
+        Thumbnail = thumbnail;
+        Slug = slug;
+        CountryId = countryId;
+        Status = status;
+        ContentRating = contentRating;
+        Year = year;
+        ModifiedDate = DateTimeOffset.UtcNow;
+
+    }
+    public Result<Success> Approve(Guid approvedId)
+    {
+        if(ApprovalStatus == ApprovalStatus.Approved)
+        {
+            return Error.Failure(code: nameof(ApprovalStatus.Approved), description: "Manga đã được duyệt trước đó.");
+        }
+        ApprovalStatus = ApprovalStatus.Approved;
+        ApprovedById = approvedId;
+        ModifiedDate = DateTimeOffset.UtcNow;
+        return ResultType.Success;
+    }
+
+    public Result<Success> Reject(Guid approvedId) {
+
+        if (ApprovalStatus == ApprovalStatus.Rejected)
+        {
+            return Error.Failure(code: nameof(ApprovalStatus.Rejected), description: "Manga đã được hủy trước đó.");
+        }
+        IsDeleted = true;
+        ApprovalStatus = ApprovalStatus.Rejected;
+        ApprovedById = approvedId;
+        ModifiedDate = DateTimeOffset.UtcNow;
+        return ResultType.Success;
+    }
+
+    public Result<Success> Publish()
+    {
+        if (ApprovalStatus != ApprovalStatus.Approved)
+        {
+            return Error.Failure(code: nameof(IsPublished), description: "Manga chưa được duyệt, không thể xuất bản..");
+        }
+        if (ApprovalStatus == ApprovalStatus.Rejected)
+        {
+            return Error.Failure(code: nameof(IsPublished), description: "Manga đã bị hủy, không thể xuất bản..");
+        }
+        if (IsPublished)
+        {
+            return Error.Failure(code: nameof(IsPublished), description: "Manga đã được xuất bản trước đó.");
+        }
+
+        IsPublished = true;
+        ModifiedDate = DateTimeOffset.UtcNow;
+        return ResultType.Success;
+    }
+    public Result<Success> UnPublish()
+    {
+        if (!IsPublished)
+        {
+            return Error.Failure(code: nameof(IsPublished), description: "Manga chưa được xuất bản.");
+        }
+
+        IsPublished = false;
+        ModifiedDate = DateTimeOffset.UtcNow;
+        return ResultType.Success;
+    }
+
 }

@@ -1,8 +1,9 @@
-﻿namespace MangaApp.Domain.Entities;
+﻿using MangaApp.Domain.Abstractions;
 
-public class Country
+namespace MangaApp.Domain.Entities;
+
+public class Country: EntityBase<int>
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string Code { get; set; }
     private readonly List<Manga> _manga;

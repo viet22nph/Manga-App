@@ -29,6 +29,7 @@ public static class SwaggerExtensions
                         new List<string>()
                     }
                 });
+            options.SchemaFilter<EnumSchemaFilter>();
         });
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     }
