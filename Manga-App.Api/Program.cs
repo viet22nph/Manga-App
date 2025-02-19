@@ -4,19 +4,21 @@ using MangaApp.Persistence;
 using MangaApp.Persistence.DependencyInjections.Extentions;
 using MangaApp.Persistence.SeedData;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddScoped<SeedData>();
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services
     .AddControllers()
-    .AddApplicationPart(MangaApp.Presentation.AssemblyReference.Assembly);
+    .AddApplicationPart(MangaApp.Presentation.AssemblyReference.Assembly)
+    .AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
 
 builder.Services.AddSqlServer();
 builder.Services.AddIdentity();
@@ -25,6 +27,8 @@ builder.Services.AddCacheRedis(builder.Configuration);
 builder.Services.ConfigureSqlServerRetryOption(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddMediatRApplication();
+builder.Services.AddAws(builder.Configuration);
+builder.Services.AddServicePersitence();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>

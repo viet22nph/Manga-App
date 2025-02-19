@@ -1,6 +1,9 @@
-﻿using MangaApp.Application.Abstraction.Services;
+﻿using Amazon;
+using Amazon.S3;
+using MangaApp.Application.Abstraction.Services;
 using MangaApp.Application.Abstraction.Services.CacheService;
 using MangaApp.Infrastructure.Authentication;
+using MangaApp.Infrastructure.Aws;
 using MangaApp.Infrastructure.DependencyInjection.Options;
 using MangaApp.Infrastructure.RedisCache;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -62,5 +65,18 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IRedisConnectionWrapper, RedisConnectionWrapper>();
         services.AddScoped<ICacheManager, RedisCacheManager>();
+    }
+    public static void AddAws(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AwsS3Options>(configuration.GetSection(nameof(AwsS3Options)));
+        var awsOptions = configuration.GetSection(nameof(AwsS3Options));
+        services.AddSingleton<IAmazonS3>(sp =>
+            new AmazonS3Client(
+                awsOptions["AccessKey"],
+                awsOptions["SecretKey"],
+                RegionEndpoint.GetBySystemName(awsOptions["Region"])
+            ));
+
+        services.AddScoped<IAwsS3Service, AwsS3Service>();
     }
 }
