@@ -8,14 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
 using MangaApp.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace MangaApp.Persistence;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, Microsoft.AspNetCore.Identity.IdentityUserClaim<Guid>, AppUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IHttpContextAccessor _contextAccessor;
+    public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor contextAccessor) : base(options)
     {
-
+        _contextAccessor = contextAccessor;
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {

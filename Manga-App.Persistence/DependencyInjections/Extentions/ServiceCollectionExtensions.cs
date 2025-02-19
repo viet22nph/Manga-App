@@ -1,5 +1,10 @@
-﻿using MangaApp.Domain.Entities.Identity;
+﻿using MangaApp.Application.Abstraction.Repositories;
+using MangaApp.Domain.Abstractions.Repositories;
+using MangaApp.Domain.Entities.Identity;
 using MangaApp.Persistence.DependencyInjections.Options;
+using MangaApp.Persistence.Interceptors;
+using MangaApp.Persistence.Repositories;
+using MangApp.Application.Abstraction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +22,7 @@ public static class ServiceCollectionExtensions
             var configuration = provider.GetRequiredService<IConfiguration>();
             var optionsMonitor = provider.GetRequiredService<IOptionsMonitor<SqlServerRetryOptions>>();
             var options = optionsMonitor.CurrentValue;
-
+            
             builder.EnableDetailedErrors(true)
                 .EnableSensitiveDataLogging(true)
                 .UseLazyLoadingProxies(false)
@@ -71,5 +76,14 @@ public static class ServiceCollectionExtensions
            .Bind(configuration.GetSection("SqlServerRetryOptions"))
            .ValidateDataAnnotations()
            .ValidateOnStart();
+
+    public static void AddServicePersitence(this IServiceCollection services)
+    {
+
+        services.AddTransient<IUnitOfWork, UnitOfWork>(); // Thay vì AddTransient nếu cần
+        services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        
+       
+    }
 }
 

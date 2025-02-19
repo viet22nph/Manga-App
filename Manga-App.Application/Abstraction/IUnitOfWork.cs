@@ -1,0 +1,12 @@
+﻿
+using MangaApp.Application.Abstraction.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+namespace MangApp.Application.Abstraction;
+
+public interface IUnitOfWork : IAsyncDisposable
+{
+    
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    DbContext GetDbContext();
+}
