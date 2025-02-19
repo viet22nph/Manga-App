@@ -82,8 +82,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IUnitOfWork, UnitOfWork>(); // Thay vì AddTransient nếu cần
         services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
-        
-       
+        services.AddTransient<IPermissionRepository, PermissionRepository>();
+
     }
 }
 
