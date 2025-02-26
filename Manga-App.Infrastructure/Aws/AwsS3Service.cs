@@ -73,4 +73,14 @@ public class AwsS3Service : IAwsS3Service
         var extension = Path.GetExtension(file.FileName);
         return allowedExtensions.Contains(extension);
     }
+    /// <summary>
+    /// Convert url bucket s3 to cloudfront 
+    /// </summary>
+    /// <param name="s3Url">Url bucket s3</param>
+    /// <returns>Url cloudfront</returns>
+    public string ConvertCloudFrontToBucketS3(string cloudFront)
+    {
+        if (string.IsNullOrEmpty(cloudFront)) return cloudFront;
+        return cloudFront.Replace(_awsS3Option.BucketName,$"https://{_awsS3Option.BucketName}.s3.amazonaws.com/");
+    }
 }

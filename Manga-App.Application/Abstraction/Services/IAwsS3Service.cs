@@ -8,4 +8,5 @@ public interface IAwsS3Service
 {
     Task<string> UploadFileImageAsync(string fileName, IFormFile file);
     string ConvertBucketS3ToCloudFront(string awsS3Url);
+    string ConvertCloudFrontToBucketS3(string cloudFront);
 }

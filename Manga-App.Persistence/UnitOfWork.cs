@@ -41,5 +41,16 @@ public class UnitOfWork : IUnitOfWork
             return _mangaRepository;
         }
     }
-
+    private IChapterRepository _chapterRepository;
+    public IChapterRepository ChapterRepository
+    {
+        get
+        {
+            if (_chapterRepository == null)
+            {
+                _chapterRepository = new ChapterRepository(_context);
+            }
+            return _chapterRepository;
+        }
+    }
 }

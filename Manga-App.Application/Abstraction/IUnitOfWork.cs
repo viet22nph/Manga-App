@@ -11,4 +11,5 @@ public interface IUnitOfWork : IAsyncDisposable
     DbContext GetDbContext();
 
     IMangaRepository MangaRepository { get; }
+    IChapterRepository ChapterRepository {  get; }
 }
