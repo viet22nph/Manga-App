@@ -15,7 +15,7 @@ public sealed class RejectMangaCommandHandler : ICommandHandler<RejectMangaComma
     }
     public async Task<Result<Success>> Handle(RejectMangaCommand request, CancellationToken cancellationToken)
     {
-        var manga = await _unitOfWork.MangaRepository.FindByIdAsync(request.MangaId, cancellationToken);
+        var manga = await _unitOfWork.MangaRepository.FindByIdAsync(request.MangaId);
         if (manga == null)
         {
             return Error.Failure("Not found manga");

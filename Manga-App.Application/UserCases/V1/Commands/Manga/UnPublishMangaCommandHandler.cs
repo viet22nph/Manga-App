@@ -16,7 +16,7 @@ public class UnPublishMangaCommandHandler : ICommandHandler<UnPublishMangaComman
 
     public async Task<Result<Success>> Handle(UnPublishMangaCommand request, CancellationToken cancellationToken)
     {
-        var manga = await _unitOfWork.MangaRepository.FindByIdAsync(request.MangaId, cancellationToken);
+        var manga = await _unitOfWork.MangaRepository.FindByIdAsync(request.MangaId);
         if (manga == null)
         {
             return Error.Failure("Not found manga");
