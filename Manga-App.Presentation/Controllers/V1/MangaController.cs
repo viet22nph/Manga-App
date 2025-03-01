@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static MangaApp.Contract.Services.V1.Follow.Command;
 using static MangaApp.Contract.Services.V1.History.Command;
 using static MangaApp.Contract.Services.V1.History.Query;
 using static MangaApp.Contract.Services.V1.Manga.Command;
@@ -249,4 +250,41 @@ public class MangaController : ApiController
 
         return result.Match(_ => NoContent(), Problem);
     }
+    [HttpPost("{id:guid}/follow")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> FollowManga(Guid id)
+    {
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var command = new FollowMangaCommand(userId, id);
+        var result = await _sender.Send(command);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+    [HttpDelete("{id:guid}/follow")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UnFollowManga(Guid id)
+    {
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var command = new UnFollowMangaCommand(userId, id);
+        var result = await _sender.Send(command);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+
 }
