@@ -1,5 +1,6 @@
 ﻿
 
+using Manga_App.Persistence.Repositories;
 using MangaApp.Application.Abstraction.Repositories;
 using MangaApp.Persistence.Repositories;
 using MangApp.Application.Abstraction;
@@ -51,6 +52,43 @@ public class UnitOfWork : IUnitOfWork
                 _chapterRepository = new ChapterRepository(_context);
             }
             return _chapterRepository;
+        }
+    }
+   
+    private IHistoryRepository _historyRepository;
+    public IHistoryRepository HistoryRepository
+    {
+        get
+        {
+            if( (_historyRepository == null) )
+            {
+                _historyRepository = new HistoryRepository(_context);
+            }    
+            return _historyRepository;
+        }
+    }
+    private IFollowRepository _followRepository;
+    public IFollowRepository FollowRepository
+    {
+        get
+        {
+            if (_followRepository == null)
+            {
+                _followRepository = new FollowRepository(_context);
+            }
+            return _followRepository;
+        }
+    }
+    private IRatingRepository _ratingRepository;
+    public IRatingRepository RatingRepository
+    {
+        get
+        {
+            if (_ratingRepository == null)
+            {
+                _ratingRepository = new RatingRepository(_context);
+            }
+            return _ratingRepository;
         }
     }
 }

@@ -18,6 +18,8 @@ public class Chapter : EntityAuditBase<Guid>
     public virtual Manga Manga { get; set; }
     private List<ChapterImage> _images;
     public IReadOnlyCollection<ChapterImage> Images => _images.AsReadOnly();
+
+    public virtual ICollection<History> Histories {  get; set; }
     private Chapter()
     {
         _images = new List<ChapterImage>();

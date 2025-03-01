@@ -43,6 +43,10 @@ public class Manga : EntityAuditBase<Guid>
     private List<Chapter> _chapters;
     public IReadOnlyCollection<Chapter> Chapters => _chapters.AsReadOnly();
 
+
+    public virtual ICollection<Follow> Follows {  get; set; }
+    public virtual ICollection<History> Histories { get; set; }
+    public virtual ICollection<Rating> Ratings { get; set; }
     private Manga()
     {
         _mangaGenres = new List<MangaGenre>();

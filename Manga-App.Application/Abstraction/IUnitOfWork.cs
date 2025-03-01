@@ -12,4 +12,7 @@ public interface IUnitOfWork : IAsyncDisposable
 
     IMangaRepository MangaRepository { get; }
     IChapterRepository ChapterRepository {  get; }
+    IHistoryRepository HistoryRepository { get; }
+    IFollowRepository FollowRepository { get; }
+    IRatingRepository RatingRepository { get; }
 }

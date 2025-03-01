@@ -64,5 +64,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, Microsoft.
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<Resource> Resources { get; set; }
-    
+    public DbSet<Rating > Rating { get; set; }
+    public DbSet<History> Histories { get; set; }
+    public DbSet<Follow> Follows { get; set; }
 }
