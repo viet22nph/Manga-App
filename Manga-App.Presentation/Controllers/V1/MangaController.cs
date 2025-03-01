@@ -1,13 +1,18 @@
 ﻿
 
 using MangaApp.Application.Security.Attributes;
+using MangaApp.Contract.Dtos;
 using MangaApp.Contract.Extensions;
 using MangaApp.Contract.Security.Permissions;
 using MangaApp.Contract.Shares.Enums;
 using MangaApp.Presentation.Abstraction;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static MangaApp.Contract.Services.V1.History.Command;
+using static MangaApp.Contract.Services.V1.History.Query;
 using static MangaApp.Contract.Services.V1.Manga.Command;
 using static MangaApp.Contract.Services.V1.Manga.Query;
 
@@ -163,6 +168,50 @@ public class MangaController : ApiController
     {
         var query = new GetMangaBySlugQuery(slug);
         var result = await _sender.Send(query);
+        return result.Match(data => Ok(data), Problem);
+    }
+
+
+    [HttpPost("{id:guid}/read")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ReadManga(Guid id, [FromBody] ChapterIsRead chapterIsRead)
+    {
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+        var command = new AddReadingHistoryCommand(userId, id, chapterIsRead.ChapterIdRead);
+        var result = await _sender.Send(command);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
+    [HttpGet("history")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ReadHistoryManga( int pageIndex =1, int pageSize= 20)
+    {
+        if (pageIndex <= 0)
+        {
+            pageIndex = 1;
+        }
+        if (pageSize <= 0 || pageSize >= 100)
+        {
+            pageSize = 10;
+        }
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+        var query = new GetHistoryQuery(userId, pageIndex,pageSize);
+        var result = await _sender.Send(query);
+
         return result.Match(data => Ok(data), Problem);
     }
 }
