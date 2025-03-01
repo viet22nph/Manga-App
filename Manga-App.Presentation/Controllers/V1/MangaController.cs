@@ -214,4 +214,39 @@ public class MangaController : ApiController
 
         return result.Match(data => Ok(data), Problem);
     }
+
+    [HttpDelete("{mangaId:guid}/history")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RemoveMangaHistory(Guid mangaId)
+    {
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+        var command = new RemoveMangaHistoryCommand(userId, mangaId);
+        var result = await _sender.Send(command);
+
+        return result.Match(_=> NoContent(), Problem);
+    }
+    [HttpDelete("history")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RemoveAllMangaHistory()
+    {
+        var userClaimId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "uid");
+        if (userClaimId == null || !Guid.TryParse(userClaimId.Value, out var userId))
+        {
+            return Unauthorized();
+        }
+        var command = new RemoveHistoryCommand(userId);
+        var result = await _sender.Send(command);
+
+        return result.Match(_ => NoContent(), Problem);
+    }
 }
