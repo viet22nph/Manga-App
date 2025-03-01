@@ -1,6 +1,9 @@
 ﻿
 using MangaApp.Application.Abstraction.Services;
 using MangaApp.Contract.Abstractions.Messages;
+using MangaApp.Contract.Dtos.Chapter;
+using MangaApp.Contract.Dtos.Country;
+using MangaApp.Contract.Dtos.Genre;
 using MangaApp.Contract.Shares;
 using MangaApp.Contract.Shares.Enums;
 using MangApp.Application.Abstraction;
@@ -10,7 +13,7 @@ using static MangaApp.Contract.Services.V1.Manga.Response;
 
 namespace MangaApp.Application.UserCases.V1.Queries.Manga;
 
-public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pagination<MangaPublicResponse>>
+public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pagination<MangaResponse>>
 {
 
     private readonly IUnitOfWork _unitOfWork;
@@ -20,7 +23,7 @@ public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pag
         _awsS3Service = awsS3Service;
         _unitOfWork = unitOfWork;
     }
-    public async Task<Result<Pagination<MangaPublicResponse>>> Handle(GetPublicMangaQuery request, CancellationToken cancellationToken)
+    public async Task<Result<Pagination<MangaResponse>>> Handle(GetPublicMangaQuery request, CancellationToken cancellationToken)
     {
         string sortKeyExpression = request?.SortColumn?.ToLower() switch
         {
@@ -56,25 +59,40 @@ public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pag
         var listMangaResponse = await sortedMangaQueryable
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(x => new MangaPublicResponse(
-                x.Id,
-                x.Title,
-                x.AnotherTitle,
-                x.Description,
-                x.Author,
-                _awsS3Service.ConvertBucketS3ToCloudFront(x.Thumbnail),
-                x.Slug,
-                x.Status.ToString(),
-                x.Year,
-                x.MangaGenres.Select(y => y.Genre.Name).ToList(),
-                x.Country!.Name,
-                x.ContentRating == ContentRating.Safe || x.ContentRating == ContentRating.Suggestive ? false : true,
-                x.ContentRating.ToString(),
-                x.CreatedDate,
-                x.ModifiedDate))
+            .Select(x => new MangaResponse
+            {
+                Id = x.Id,
+                Title = x.Title,
+                AnotherTitle = x.AnotherTitle,
+                Description = x.Description,
+                Author = x.Author,
+                Thumbnail = _awsS3Service.ConvertBucketS3ToCloudFront(x.Thumbnail),
+                Slug = x.Slug,
+                Country = new CountryDto { Id = x.Country.Id, Name = x.Country.Name, Code = x.Country.Code },
+                Status = x.Status.ToString(),
+                ContentRating = x.ContentRating.ToString(),
+                Year = x.Year,
+                ApprovalStatus = x.ApprovalStatus.ToString(),
+                State = x.IsPublished == true ? "published" : "draft",
+                Genres = x.MangaGenres.Select(mg => new GenreDto
+                {
+                    Id = mg.GenreId,
+                    Name = mg.Genre.Name,
+                    Slug = mg.Genre.Slug,
+                    Description = mg.Genre.Description
+                }).ToList(),
+                CreatedDate = x.CreatedDate,
+                ModifiedDate = x.ModifiedDate,
+                LatestUploadedChapter = x.Chapters.Select(c => new ChapterDto
+                {
+                    Id = c.Id,
+                    Title = $"{c.Number}. {c.Title}",
+                    ReleaseDate = c.CreatedDate
+                }).OrderByDescending(c => c.Id).FirstOrDefault(),
+            })
             .ToListAsync(cancellationToken);
         var totalCountManga = await sortedMangaQueryable.CountAsync(cancellationToken);
 
-        return Pagination<MangaPublicResponse>.Create(listMangaResponse, request.PageIndex, request.PageSize, totalCountManga);
+        return Pagination<MangaResponse>.Create(listMangaResponse, request.PageIndex, request.PageSize, totalCountManga);
     }
 }

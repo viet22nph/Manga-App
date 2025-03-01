@@ -1,6 +1,9 @@
 ﻿
 using MangaApp.Application.Abstraction.Services;
 using MangaApp.Contract.Abstractions.Messages;
+using MangaApp.Contract.Dtos.Chapter;
+using MangaApp.Contract.Dtos.Country;
+using MangaApp.Contract.Dtos.Genre;
 using MangaApp.Contract.Shares;
 using MangaApp.Contract.Shares.Errors;
 using MangApp.Application.Abstraction;
@@ -10,7 +13,7 @@ using static MangaApp.Contract.Services.V1.Manga.Response;
 
 namespace MangaApp.Application.UserCases.V1.Queries.Manga;
 
-public class GetMangaBySlugQueryHandler : IQueryHandler<GetMangaBySlugQuery, MangaDetailResponse>
+public class GetMangaBySlugQueryHandler : IQueryHandler<GetMangaBySlugQuery, MangaResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAwsS3Service _awsS3Service;
@@ -19,7 +22,7 @@ public class GetMangaBySlugQueryHandler : IQueryHandler<GetMangaBySlugQuery, Man
         _awsS3Service = awsS3Service;
         _unitOfWork = unitOfWork;
     }
-    public async Task<Result<MangaDetailResponse>> Handle(GetMangaBySlugQuery request, CancellationToken cancellationToken)
+    public async Task<Result<MangaResponse>> Handle(GetMangaBySlugQuery request, CancellationToken cancellationToken)
     {
         var manga = await _unitOfWork.MangaRepository
             .FindAll(x => x.Slug == request.Slug)
@@ -33,32 +36,37 @@ public class GetMangaBySlugQueryHandler : IQueryHandler<GetMangaBySlugQuery, Man
             return Error.Failure(code: nameof(Domain.Entities.Manga), description: "Manga not found");
         }
 
-        var response = new MangaDetailResponse(
-            Id: manga.Id,
-            Title: manga.Title,
-            AnotherTitle: manga.AnotherTitle,
-            Description: manga.Description,
-            Author: manga.Author,
-            Thumbnail: _awsS3Service.ConvertBucketS3ToCloudFront(manga.Thumbnail),
-            Slug: manga.Slug,
-            Status: manga.Status.ToString(),
-            Year: manga.Year,
-            ContentRating: manga.ContentRating.ToString(),
-            Genres: manga.MangaGenres.Select(x => new Contract.Dtos.Genre.Genre
+        var response = new MangaResponse
+        {
+            Id = manga.Id,
+            Title = manga.Title,
+            AnotherTitle = manga.AnotherTitle,
+            Description = manga.Description,
+            Author = manga.Author,
+            Thumbnail = _awsS3Service.ConvertBucketS3ToCloudFront(manga.Thumbnail),
+            Slug = manga.Slug,
+            Country = new CountryDto { Id = manga.Country.Id, Name = manga.Country.Name, Code = manga.Country.Code },
+            Status = manga.Status.ToString(),
+            ContentRating = manga.ContentRating.ToString(),
+            Year = manga.Year,
+            ApprovalStatus = manga.ApprovalStatus.ToString(),
+            State = manga.IsPublished == true ? "published" : "draft",
+            Genres = manga.MangaGenres.Select(mg => new GenreDto
             {
-                Id = x.Genre.Id,
-                Name = x.Genre.Name,
-                Slug = x.Genre.Slug,
+                Id = mg.GenreId,
+                Name = mg.Genre.Name,
+                Slug = mg.Genre.Slug,
+                Description = mg.Genre.Description
             }).ToList(),
-            Country: new Contract.Dtos.Country.Country
+            CreatedDate = manga.CreatedDate,
+            ModifiedDate = manga.ModifiedDate,
+            LatestUploadedChapter = manga.Chapters.Select(c => new ChapterDto
             {
-                Id = manga.Country!.Id,
-                Name = manga.Country.Name,
-                Code = manga.Country.Code,
-            },
-            CreateDate: manga.CreatedDate,
-            UpdateDate: manga.ModifiedDate
-        );
+                Id = c.Id,
+                Title = $"{c.Number}. {c.Title}",
+                ReleaseDate = c.CreatedDate
+            }).OrderByDescending(c => c.Id).FirstOrDefault(),
+        };
         return response;
     }
 }

@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using static MangaApp.Contract.Services.V1.Manga.Query;
 using static MangaApp.Contract.Services.V1.Manga.Response;
 using MangaApp.Application.Abstraction.Services;
+using MangaApp.Contract.Dtos.Country;
+using MangaApp.Contract.Dtos.Genre;
+using MangaApp.Contract.Dtos.Chapter;
 
 namespace MangaApp.Application.UserCases.V1.Queries.Manga;
 
@@ -66,24 +69,37 @@ public class GetListMangaQueryHandler : IQueryHandler<GetListMangaQuery, Paginat
         var listMangaResponse = await sortedMangaQueryable
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(x => new MangaResponse(
-                x.Id,
-                x.Title,
-                x.AnotherTitle,
-                x.Description,
-                x.Author,
-                _awsS3Service.ConvertBucketS3ToCloudFront(x.Thumbnail),
-                x.Slug,
-                x.Status.ToString(),
-                x.Year,
-                x.MangaGenres.Select(y => y.Genre.Name).ToList(),
-                x.Country!.Name,
-                x.ContentRating == ContentRating.Safe || x.ContentRating == ContentRating.Suggestive ? false : true,
-                x.ContentRating.ToString(),
-                x.ApprovalStatus.ToString(),
-                x.IsPublished,
-                x.CreatedDate,
-                x.ModifiedDate))
+            .Select(x => new MangaResponse
+            {
+                Id = x.Id,
+                Title = x.Title,
+                AnotherTitle = x.AnotherTitle,
+                Description = x.Description,
+                Author = x.Author,
+                Thumbnail = _awsS3Service.ConvertBucketS3ToCloudFront(x.Thumbnail),
+                Slug = x.Slug,
+                Country = new CountryDto { Id = x.Country.Id, Name = x.Country.Name, Code = x.Country.Code },
+                Status = x.Status.ToString(),
+                ContentRating = x.ContentRating.ToString(),
+                Year = x.Year,
+                ApprovalStatus = x.ApprovalStatus.ToString(),
+                State = x.IsPublished == true? "published": "draft",
+                Genres = x.MangaGenres.Select(mg=> new GenreDto
+                {
+                    Id = mg.GenreId,
+                    Name = mg.Genre.Name,
+                    Slug = mg.Genre.Slug,
+                    Description = mg.Genre.Description
+                }).ToList(),
+                CreatedDate = x.CreatedDate,
+                ModifiedDate = x.ModifiedDate,
+                LatestUploadedChapter = x.Chapters.Select(c=> new ChapterDto
+                {
+                    Id = c.Id,
+                    Title = $"{c.Number}. {c.Title}",
+                    ReleaseDate = c.CreatedDate
+                }).OrderByDescending(c=> c.Id).FirstOrDefault(),
+            })
             .ToListAsync(cancellationToken);
         var totalCountManga = await sortedMangaQueryable.CountAsync(cancellationToken);
 

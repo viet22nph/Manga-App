@@ -28,9 +28,9 @@ public static class Query
       SortOrder SortOrder,
       int PageIndex,
       int PageSize)
-      : IQuery<Pagination<MangaPublicResponse>>;
+      : IQuery<Pagination<MangaResponse>>;
 
-    public record GetMangaByIdQuery(Guid Id): IQuery<MangaDetailResponse>;
+    public record GetMangaByIdQuery(Guid Id): IQuery<MangaResponse>;
 
-    public record GetMangaBySlugQuery(string Slug) : IQuery<MangaDetailResponse>;
+    public record GetMangaBySlugQuery(string Slug) : IQuery<MangaResponse>;
 }

@@ -1,7 +1,7 @@
 ﻿
 namespace MangaApp.Contract.Dtos.Country;
 
-public class Country
+public class CountryDto
 {
     public int Id { get; set; }
     public string Name { get; set; }

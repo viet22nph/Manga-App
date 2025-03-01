@@ -50,4 +50,7 @@ public static class Command
        string? Slug,
        int? Year
     ) : ICommand<Success>;
+
+    public record FollowMangaCommand(Guid UserId, Guid MangaId): ICommand<Success>;
+    public record UnFollowMangaCommand(Guid UserId, Guid MangaId) : ICommand<Success>;
 }
