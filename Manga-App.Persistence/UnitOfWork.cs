@@ -54,16 +54,16 @@ public class UnitOfWork : IUnitOfWork
             return _chapterRepository;
         }
     }
-   
+
     private IHistoryRepository _historyRepository;
     public IHistoryRepository HistoryRepository
     {
         get
         {
-            if( (_historyRepository == null) )
+            if ((_historyRepository == null))
             {
                 _historyRepository = new HistoryRepository(_context);
-            }    
+            }
             return _historyRepository;
         }
     }
@@ -89,6 +89,19 @@ public class UnitOfWork : IUnitOfWork
                 _ratingRepository = new RatingRepository(_context);
             }
             return _ratingRepository;
+        }
+    }
+
+    private IViewRepository _viewRepository;
+    public IViewRepository ViewRepository
+    {
+        get
+        {
+            if(_viewRepository == null)
+            {
+                _viewRepository = new ViewRepository(_context);
+            }    
+            return _viewRepository;
         }
     }
 }

@@ -5,11 +5,11 @@ namespace MangaApp.Domain.Abstractions.Repositories;
 
 public interface IRepositoryBase<TEntity, in Tkey> where TEntity : class
 {
-    Task<TEntity?> FindByIdAsync(Tkey id, bool tracking = true, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
+    Task<TEntity?> FindByIdAsync(Tkey id, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
 
-    Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
+    Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
 
-    IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true, params Expression<Func<TEntity, object>>[] includeProperties);
+    IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, params Expression<Func<TEntity, object>>[] includeProperties);
 
     void Add(TEntity entity);
 
@@ -22,9 +22,9 @@ public interface IRepositoryBase<TEntity, in Tkey> where TEntity : class
 }
 public interface IRepositoryBase<TEntity> where TEntity : class
 {
-    Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
+    Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties);
 
-    IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true, params Expression<Func<TEntity, object>>[] includeProperties);
+    IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, params Expression<Func<TEntity, object>>[] includeProperties);
 
     void Add(TEntity entity);
 

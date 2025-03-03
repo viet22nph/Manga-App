@@ -4,6 +4,7 @@ using MangaApp.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Manga_App.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250302025656_MangaView")]
+    partial class MangaView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,15 +499,12 @@ namespace Manga_App.Persistence.Migrations
                     b.Property<Guid>("MangaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("ViewCount")
+                    b.Property<long>("TotalView")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("ViewDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MangaId", "ViewDate")
+                    b.HasIndex("MangaId")
                         .IsUnique();
 
                     b.ToTable("MangaViews", (string)null);
@@ -813,8 +813,8 @@ namespace Manga_App.Persistence.Migrations
             modelBuilder.Entity("MangaApp.Domain.Entities.MangaViews", b =>
                 {
                     b.HasOne("MangaApp.Domain.Entities.Manga", "Manga")
-                        .WithMany("Views")
-                        .HasForeignKey("MangaId")
+                        .WithOne("View")
+                        .HasForeignKey("MangaApp.Domain.Entities.MangaViews", "MangaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -965,7 +965,8 @@ namespace Manga_App.Persistence.Migrations
 
                     b.Navigation("Ratings");
 
-                    b.Navigation("Views");
+                    b.Navigation("View")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MangaApp.Domain.Entities.Permission", b =>

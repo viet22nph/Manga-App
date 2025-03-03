@@ -236,6 +236,32 @@ public class RedisCacheManager : ICacheManager
         GC.SuppressFinalize(this);
     }
 
+    public async Task<long> IncrementViewAsync(string key, long value = 1)
+    {
+        if (_db == null)
+            throw new InvalidOperationException("Redis connection is not initialized.");
 
+        return await _db.StringIncrementAsync(key, value);
+    }
+    public async Task<Dictionary<Guid, long>> GetAllViewsAsync()
+    {
+        var views = new Dictionary<Guid, long>();
+
+        foreach (var endPoint in _connectionWrapper.GetEndPoints())
+        {
+            var keys = GetKeys(endPoint, $"{Contract.Shares.Constants.RedisKey.VIEW_MANGA}*");
+
+            foreach (var key in keys)
+            {
+                var parts = key.ToString().Split(':');
+                if (parts.Length == 3 && Guid.TryParse(parts[1], out Guid mangaId))
+                {
+                    long count = (long)await _db.StringGetAsync(key);
+                    views[mangaId] = count;
+                }
+            }
+        }
+        return views;
+    }
     #endregion
 }

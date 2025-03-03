@@ -47,6 +47,7 @@ public class Manga : EntityAuditBase<Guid>
     public virtual ICollection<Follow> Follows {  get; set; }
     public virtual ICollection<History> Histories { get; set; }
     public virtual ICollection<Rating> Ratings { get; set; }
+    public virtual List<MangaViews> Views { get; set; }
     private Manga()
     {
         _mangaGenres = new List<MangaGenre>();

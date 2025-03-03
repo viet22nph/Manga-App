@@ -23,6 +23,7 @@ public static class TableNames
     internal const string History = nameof(History);
     internal const string Follow = nameof(Follow);
     internal const string Rating = nameof(Rating);
+    internal const string MangaViews = nameof(MangaViews);
     // role permission
     internal const string Permission = nameof(Permission);
     internal const string RolePermission = nameof(RolePermission);

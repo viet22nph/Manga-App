@@ -15,4 +15,5 @@ public interface IUnitOfWork : IAsyncDisposable
     IHistoryRepository HistoryRepository { get; }
     IFollowRepository FollowRepository { get; }
     IRatingRepository RatingRepository { get; }
+    IViewRepository ViewRepository { get; }
 }

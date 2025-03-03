@@ -19,11 +19,11 @@ public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDi
     public void Dispose()
         => _context?.Dispose();
 
-    public IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true,
+    public IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false,
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
         IQueryable<TEntity> items = 
-            tracking == true ? _context.Set<TEntity>().AsNoTracking() : _context.Set<TEntity>().AsTracking(); // Importance Always include AsNoTracking for Query Side
+            tracking == false ? _context.Set<TEntity>().AsNoTracking() : _context.Set<TEntity>().AsTracking(); // Importance Always include AsNoTracking for Query Side
         if (includeProperties != null)
         {
             items = items.AsSplitQuery();
@@ -37,10 +37,10 @@ public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey>, IDi
         return items;
     }
 
-    public async Task<TEntity?> FindByIdAsync(TKey id, bool tracking = true, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<TEntity?> FindByIdAsync(TKey id, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
         => await FindAll(null, tracking ,includeProperties).AsTracking().SingleOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
 
-    public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
         => await FindAll(null, tracking,includeProperties).AsTracking().SingleOrDefaultAsync(predicate, cancellationToken);
 
     public void Add(TEntity entity)
@@ -72,7 +72,7 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity>, IDisposable
     public void Dispose()
         => _context?.Dispose();
 
-    public IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true,
+    public IQueryable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false,
         params Expression<Func<TEntity, object>>[] includeProperties)
     {
         IQueryable<TEntity> items = 
@@ -86,7 +86,7 @@ public class RepositoryBase<TEntity> : IRepositoryBase<TEntity>, IDisposable
 
         return items;
     }
-    public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = true,CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
+    public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>>? predicate = null, bool tracking = false, CancellationToken cancellationToken = default, params Expression<Func<TEntity, object>>[] includeProperties)
         => await FindAll(null,tracking ,includeProperties).AsTracking().SingleOrDefaultAsync(predicate, cancellationToken);
 
     public void Add(TEntity entity)

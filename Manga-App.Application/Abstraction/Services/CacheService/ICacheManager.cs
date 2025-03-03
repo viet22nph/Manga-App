@@ -22,4 +22,6 @@ public interface ICacheManager : IDisposable
     void Remove(string key);
     void RemoveByPrefix(string prefix);
     void Clear();
+    Task<long> IncrementViewAsync(string key, long value = 1);
+    Task<Dictionary<Guid, long>> GetAllViewsAsync();
 }
