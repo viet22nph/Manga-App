@@ -51,6 +51,8 @@ public class CreateChapterCommandHandler : ICommandHandler<CreateChapterCommand,
 
         var chapter = Domain.Entities.Chapter.Create(request.MangaId, request.Number, request.Title);
         chapter.SetChapterImages(imagesUrl);
+        manga.ModifiedDate = DateTimeOffset.UtcNow;
+        _unitOfWork.MangaRepository.Update(manga);// cập nhật ngày
             _unitOfWork.ChapterRepository.Add(chapter);
         await _unitOfWork.SaveChangesAsync();
         return ResultType.Success;
