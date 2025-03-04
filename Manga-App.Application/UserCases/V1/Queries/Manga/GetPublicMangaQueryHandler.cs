@@ -1,10 +1,12 @@
 ﻿
 using MangaApp.Application.Abstraction.Services;
+using MangaApp.Application.Abstraction.Services.CacheService;
 using MangaApp.Contract.Abstractions.Messages;
 using MangaApp.Contract.Dtos.Chapter;
 using MangaApp.Contract.Dtos.Country;
 using MangaApp.Contract.Dtos.Genre;
 using MangaApp.Contract.Shares;
+using MangaApp.Contract.Shares.Constants;
 using MangaApp.Contract.Shares.Enums;
 using MangApp.Application.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +20,22 @@ public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pag
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAwsS3Service _awsS3Service;
-    public GetPublicMangaQueryHandler(IUnitOfWork unitOfWork, IAwsS3Service awsS3Service)
+    public readonly ICacheManager _cacheManager;
+
+    public GetPublicMangaQueryHandler(IUnitOfWork unitOfWork, IAwsS3Service awsS3Service, ICacheManager cacheManager)
     {
         _awsS3Service = awsS3Service;
         _unitOfWork = unitOfWork;
+        _cacheManager = cacheManager;
     }
     public async Task<Result<Pagination<MangaResponse>>> Handle(GetPublicMangaQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = $"{RedisKey.MANGA_PUBLIC}{request.SearchTerm ?? ""}-{request.GenreSlug ?? ""}-{request.Status.ToString() ?? ""}-{request.PageIndex}-{request.PageSize}-{request.SortColumn ?? ""}-{request.SortOrder ?? ""}";
+        var mangaCache =await _cacheManager.GetAsync<Pagination<MangaResponse>>(cacheKey);
+        if(mangaCache != null)
+        {
+            return mangaCache;
+        }    
         string sortKeyExpression = request?.SortColumn?.ToLower() switch
         {
             "id" => nameof(Domain.Entities.Manga.Id),
@@ -52,8 +63,8 @@ public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pag
         }
         // Apply sorting and pagination after filtering
         var sortedMangaQueryable = request.SortOrder == SortOrder.Ascending
-            ? mangaQueryable.OrderBy(x => EF.Property<object>(x, sortKeyExpression))
-            : mangaQueryable.OrderByDescending(x => EF.Property<object>(x, sortKeyExpression));
+           ? mangaQueryable.OrderBy(x => EF.Property<object>(x, sortKeyExpression))
+           : mangaQueryable.OrderByDescending(x => EF.Property<object>(x, sortKeyExpression));
 
         // select data pagiation
         var listMangaResponse = await sortedMangaQueryable
@@ -93,6 +104,10 @@ public class GetPublicMangaQueryHandler : IQueryHandler<GetPublicMangaQuery, Pag
             .ToListAsync(cancellationToken);
         var totalCountManga = await sortedMangaQueryable.CountAsync(cancellationToken);
 
-        return Pagination<MangaResponse>.Create(listMangaResponse, request.PageIndex, request.PageSize, totalCountManga);
+        var result = Pagination<MangaResponse>.Create(listMangaResponse, request.PageIndex, request.PageSize, totalCountManga);
+        // save cache 
+        await _cacheManager.SetAsync<Pagination<MangaResponse>>(cacheKey, result, 5);
+
+        return result;
     }
 }

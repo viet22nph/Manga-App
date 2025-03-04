@@ -27,4 +27,12 @@ public static class Response
         public List<GenreDto> Genres { get; set; }
         public ChapterDto? LatestUploadedChapter { get; set; }
     };
+
+    public class MangaDetailResponse
+    {
+        public MangaResponse Manga {  get; set; }
+        public long View { get; set; }
+        public float Rating { get; set; }
+        public int Follow { get; set; }
+    };
 }

@@ -3,7 +3,7 @@ namespace MangaApp.Contract.Shares;
 
 public class Pagination<T>
 {
-    protected Pagination(List<T> items, int pageIndex, int pageSize, int totalCount)
+    public Pagination(List<T> items, int pageIndex, int pageSize, int totalCount)
     {
         Data = items;
         PageIndex = pageIndex;

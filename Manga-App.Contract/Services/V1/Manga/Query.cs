@@ -30,7 +30,7 @@ public static class Query
       int PageSize)
       : IQuery<Pagination<MangaResponse>>;
 
-    public record GetMangaByIdQuery(Guid Id): IQuery<MangaResponse>;
+    public record GetMangaByIdQuery(Guid Id): IQuery<MangaDetailResponse>;
 
-    public record GetMangaBySlugQuery(string Slug) : IQuery<MangaResponse>;
+    public record GetMangaBySlugQuery(string Slug) : IQuery<MangaDetailResponse>;
 }
