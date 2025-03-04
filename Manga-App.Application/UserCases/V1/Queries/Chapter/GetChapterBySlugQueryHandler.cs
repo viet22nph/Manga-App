@@ -7,7 +7,7 @@ using MangApp.Application.Abstraction;
 using static MangaApp.Contract.Services.V1.Chapter.Query;
 using static MangaApp.Contract.Services.V1.Chapter.Response;
 
-namespace MangaApp.Application.UserCases.V1.Queries.Query;
+namespace MangaApp.Application.UserCases.V1.Queries.Chapter;
 
 public class GetChapterBySlugQueryHandler : IQueryHandler<GetChapterBySlugQuery, ChapterDetailReponse>
 {
@@ -22,7 +22,7 @@ public class GetChapterBySlugQueryHandler : IQueryHandler<GetChapterBySlugQuery,
     public async Task<Result<ChapterDetailReponse>> Handle(GetChapterBySlugQuery request, CancellationToken cancellationToken)
     {
         var chapter = await _unitOfWork.ChapterRepository
-            .FindSingleAsync(x=> x.Slug == request.Slug, cancellationToken, x => x.Images);
+            .FindSingleAsync(x=> x.Slug == request.Slug,true ,cancellationToken, x => x.Images);
         if (chapter is null)
         {
             return Error.Failure(code: nameof(Domain.Entities.Chapter), description: "Chapter not found");

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using static MangaApp.Contract.Services.V1.Chapter.Query;
 using static MangaApp.Contract.Services.V1.Chapter.Response;
 
-namespace MangaApp.Application.UserCases.V1.Queries.Query;
+namespace MangaApp.Application.UserCases.V1.Queries.Chapter;
 
 public class GetListChapterQueryHanlder : IQueryHandler<GetListChapterQuery, Pagination<ChapterResponse>>
 {

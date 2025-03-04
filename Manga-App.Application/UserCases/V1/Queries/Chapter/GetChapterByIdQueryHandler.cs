@@ -5,11 +5,10 @@ using MangaApp.Contract.Services.V1.Chapter;
 using MangaApp.Contract.Shares;
 using MangaApp.Contract.Shares.Errors;
 using MangApp.Application.Abstraction;
-using System.Linq;
 using static MangaApp.Contract.Services.V1.Chapter.Query;
 using static MangaApp.Contract.Services.V1.Chapter.Response;
 
-namespace MangaApp.Application.UserCases.V1.Queries.Query;
+namespace MangaApp.Application.UserCases.V1.Queries.Chapter;
 
 public class GetChapterByIdQueryHandler : IQueryHandler<GetChapterByIdQuery, ChapterDetailReponse>
 {
@@ -24,7 +23,7 @@ public class GetChapterByIdQueryHandler : IQueryHandler<GetChapterByIdQuery, Cha
 
     public async Task<Result<ChapterDetailReponse>> Handle(GetChapterByIdQuery request, CancellationToken cancellationToken)
     {
-        var chapter = await _unitOfWork.ChapterRepository.FindByIdAsync(request.ChapterId, cancellationToken, x=> x.Images);
+        var chapter = await _unitOfWork.ChapterRepository.FindByIdAsync(request.ChapterId, tracking: true,cancellationToken, x=> x.Images);
         if(chapter is null)
         {
             return Error.Failure(code: nameof(Domain.Entities.Chapter), description:"Chapter not found");
