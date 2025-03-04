@@ -16,4 +16,5 @@ public interface IUnitOfWork : IAsyncDisposable
     IFollowRepository FollowRepository { get; }
     IRatingRepository RatingRepository { get; }
     IViewRepository ViewRepository { get; }
+    ICommentRepository CommentRepository { get; }
 }

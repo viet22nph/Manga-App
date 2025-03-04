@@ -104,4 +104,17 @@ public class UnitOfWork : IUnitOfWork
             return _viewRepository;
         }
     }
+
+    private ICommentRepository _commentRepository;
+    public ICommentRepository CommentRepository
+    {
+        get
+        {
+            if(_commentRepository == null)
+            {
+                _commentRepository = new CommentRepository(_context);
+            }    
+            return _commentRepository;
+        }
+    }
 }

@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         {
             options.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
             options.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            options.AddOpenBehavior(typeof(TransactionPipelineBehavior<,>));
         });
         services.AddValidatorsFromAssemblyContaining(typeof(ServiceCollectionExtensions));
     }

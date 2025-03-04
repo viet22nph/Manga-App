@@ -32,7 +32,7 @@ public class AppUser : IdentityUser<Guid>, IDateTracking, ISoftDelete
     public virtual ICollection<Follow> Follows { get; set; }
     public virtual ICollection<History> Histories { get; set; }
     public virtual ICollection<Rating> Ratings { get; set; }
-
+    public virtual ICollection<Comment> Comments { get; set; }
     private AppUser()
     {
         Claims = new List<IdentityUserClaim<Guid>>();
