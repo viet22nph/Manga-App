@@ -17,4 +17,5 @@ public interface IUnitOfWork : IAsyncDisposable
     IRatingRepository RatingRepository { get; }
     IViewRepository ViewRepository { get; }
     ICommentRepository CommentRepository { get; }
+    INotificationRepository NotificationRepository { get; }
 }

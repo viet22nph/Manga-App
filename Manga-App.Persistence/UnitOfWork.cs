@@ -1,4 +1,4 @@
-﻿
+﻿    
 
 using Manga_App.Persistence.Repositories;
 using MangaApp.Application.Abstraction.Repositories;
@@ -115,6 +115,17 @@ public class UnitOfWork : IUnitOfWork
                 _commentRepository = new CommentRepository(_context);
             }    
             return _commentRepository;
+        }
+    }
+    private INotificationRepository _notificationRepository;
+    public INotificationRepository NotificationRepository
+    {
+        get {
+            if(_notificationRepository == null)
+            {
+                _notificationRepository = new NotificationRepository(_context);
+            }    
+            return _notificationRepository;
         }
     }
 }

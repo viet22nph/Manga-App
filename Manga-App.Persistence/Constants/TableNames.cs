@@ -25,6 +25,7 @@ public static class TableNames
     internal const string Rating = nameof(Rating);
     internal const string MangaViews = nameof(MangaViews);
     internal const string Comment =nameof(Comment);
+    internal const string Notification = nameof(Notification);
     // role permission
     internal const string Permission = nameof(Permission);
     internal const string RolePermission = nameof(RolePermission);

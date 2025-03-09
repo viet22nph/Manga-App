@@ -33,6 +33,8 @@ public class AppUser : IdentityUser<Guid>, IDateTracking, ISoftDelete
     public virtual ICollection<History> Histories { get; set; }
     public virtual ICollection<Rating> Ratings { get; set; }
     public virtual ICollection<Comment> Comments { get; set; }
+    public virtual ICollection<Notification> ReceiveNotifications { get; set; }
+    public virtual ICollection<Notification> SenderNotifications { get; set; }
     private AppUser()
     {
         Claims = new List<IdentityUserClaim<Guid>>();
