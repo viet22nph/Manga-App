@@ -16,13 +16,13 @@ public class AuthenticationController : ApiController
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromForm] LoginQuery request)
+    public async Task<IActionResult> Login([FromBody] LoginQuery request)
     {
         var result = await _sender.Send(request);
         return result.Match(data => Ok(data), Problem);
     }
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromForm] RegisterCommand request)
+    public async Task<IActionResult> Register([FromBody] RegisterCommand request)
     {
         var result = await _sender.Send(request);
         return result.Match(_ => Ok(new
@@ -31,7 +31,7 @@ public class AuthenticationController : ApiController
         }), Problem);
     }
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromForm] RefreshTokenQuery request)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenQuery request)
     {
         var result = await _sender.Send(request);
         return result.Match(data => Ok(data), Problem);
