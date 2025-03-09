@@ -91,7 +91,7 @@ public static class ServiceCollectionExtensions
             configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
         services.AddMassTransit(config =>
         {
-          
+            config.AddConsumer<GetChapterRequestConsumer>();
             config.UsingRabbitMq((context, cfg) =>
             {
                 cfg.Host(masstransitConfiguration.Host, masstransitConfiguration.VHost, h =>
@@ -99,9 +99,20 @@ public static class ServiceCollectionExtensions
                     h.Username(masstransitConfiguration.UserName);
                     h.Password(masstransitConfiguration.Password);
                 });
+                cfg.ReceiveEndpoint("new-chapter-queue", e =>
+                {
+                    e.ConfigureConsumeTopology = false;
+                    // notification exchange
+                    e.Bind(masstransitConfiguration.ExchangeName, x =>
+                    {
+                        x.ExchangeType = masstransitConfiguration.ExchangeType;
+                        x.RoutingKey = "notification.new_chapter";
+                    });
+                    e.ConfigureConsumer<GetChapterRequestConsumer>(context);
+                });
 
-               
             });
+
         });
         return services;
     }

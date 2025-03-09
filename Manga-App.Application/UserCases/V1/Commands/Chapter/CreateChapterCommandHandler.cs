@@ -7,7 +7,9 @@ using MangaApp.Contract.Shares;
 using MangaApp.Contract.Shares.Errors;
 using MangaApp.Domain.Entities;
 using MangApp.Application.Abstraction;
+using MassTransit;
 using static MangaApp.Contract.Services.V1.Chapter.Command;
+using static MangaApp.Contract.Services.V1.Chapter.Event;
 
 namespace MangaApp.Application.UserCases.V1.Commands.Chapter;
 
@@ -15,10 +17,13 @@ public class CreateChapterCommandHandler : ICommandHandler<CreateChapterCommand,
 {
     private readonly IUnitOfWork _unitOfWork;
     private IAwsS3Service _awsS3Service;
-    public CreateChapterCommandHandler(IUnitOfWork unitOfWork, IAwsS3Service awsS3Service)
+
+    private readonly IPublishEndpoint _publishEndpoint;
+    public CreateChapterCommandHandler(IUnitOfWork unitOfWork, IAwsS3Service awsS3Service, IPublishEndpoint publishEndpoint)
     {
         _unitOfWork = unitOfWork;
         _awsS3Service = awsS3Service;
+        _publishEndpoint = publishEndpoint;
     }
 
 
@@ -55,6 +60,17 @@ public class CreateChapterCommandHandler : ICommandHandler<CreateChapterCommand,
         _unitOfWork.MangaRepository.Update(manga);// cập nhật ngày
             _unitOfWork.ChapterRepository.Add(chapter);
         await _unitOfWork.SaveChangesAsync();
+
+        // using message broker save message
+        await _publishEndpoint.Publish(new NewChapterCreatedConsumer
+        {
+            ChapterId = chapter.Id,
+            MangaId = manga.Id,
+            MangaName =manga.Title,
+            Title = chapter.Title,
+            MangaSlug =manga.Slug,
+            CreatedAt = DateTime.UtcNow,
+        });
         return ResultType.Success;
     }
 }
