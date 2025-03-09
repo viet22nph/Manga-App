@@ -20,6 +20,7 @@
 	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Manga-App.Application\Manga-App.Application.csproj" />
+    <ProjectReference Include="..\Manga-App.Contract\Manga-App.Contract.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,11 +1,14 @@
 ﻿using Amazon;
 using Amazon.S3;
+using Manga_App.Infrastructure.DependencyInjection.Options;
 using MangaApp.Application.Abstraction.Services;
 using MangaApp.Application.Abstraction.Services.CacheService;
 using MangaApp.Infrastructure.Authentication;
 using MangaApp.Infrastructure.Aws;
 using MangaApp.Infrastructure.DependencyInjection.Options;
+using MangaApp.Infrastructure.MessageQueue.Consumer;
 using MangaApp.Infrastructure.RedisCache;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -78,5 +81,28 @@ public static class ServiceCollectionExtensions
             ));
 
         services.AddScoped<IAwsS3Service, AwsS3Service>();
+    }
+
+    // config masstrasit
+    public static IServiceCollection AddMasstransitConfigurationRabbitMq(this IServiceCollection services, IConfiguration configuration)
+    {
+
+        var masstransitConfiguration = new MasstransitConfiguration();
+            configuration.GetSection(nameof(MasstransitConfiguration)).Bind(masstransitConfiguration);
+        services.AddMassTransit(config =>
+        {
+          
+            config.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(masstransitConfiguration.Host, masstransitConfiguration.VHost, h =>
+                {
+                    h.Username(masstransitConfiguration.UserName);
+                    h.Password(masstransitConfiguration.Password);
+                });
+
+               
+            });
+        });
+        return services;
     }
 }

@@ -7,19 +7,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{35056197-105
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F43B45E9-29D4-4CBA-8AF4-259CF6F4CB23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Api", "Manga-App.Api\Manga-App.Api.csproj", "{2183D3C4-847E-4144-B521-D4984D22EE0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Api", "Manga-App.Api\Manga-App.Api.csproj", "{2183D3C4-847E-4144-B521-D4984D22EE0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Application", "Manga-App.Application\Manga-App.Application.csproj", "{98DB5A75-3201-49DC-AA25-AEEB6FBA860E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Application", "Manga-App.Application\Manga-App.Application.csproj", "{98DB5A75-3201-49DC-AA25-AEEB6FBA860E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Contract", "Manga-App.Contract\Manga-App.Contract.csproj", "{88A0E35F-475D-43B1-A4F8-069A4E922081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Contract", "Manga-App.Contract\Manga-App.Contract.csproj", "{88A0E35F-475D-43B1-A4F8-069A4E922081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Domain", "Manga-App.Domain\Manga-App.Domain.csproj", "{42A6143A-A1B9-4A9F-B47D-AE9949CFB179}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Domain", "Manga-App.Domain\Manga-App.Domain.csproj", "{42A6143A-A1B9-4A9F-B47D-AE9949CFB179}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Infrastructure", "Manga-App.Infrastructure\Manga-App.Infrastructure.csproj", "{FF096DB9-17C5-405C-AA6F-F715A96888DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Infrastructure", "Manga-App.Infrastructure\Manga-App.Infrastructure.csproj", "{FF096DB9-17C5-405C-AA6F-F715A96888DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Persistence", "Manga-App.Persistence\Manga-App.Persistence.csproj", "{8767A883-628C-4CDC-931F-240DB9C8F876}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Persistence", "Manga-App.Persistence\Manga-App.Persistence.csproj", "{8767A883-628C-4CDC-931F-240DB9C8F876}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga-App.Presentation", "Manga-App.Presentation\Manga-App.Presentation.csproj", "{3941974A-776B-44FC-9FB8-44A63F54EB06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manga-App.Presentation", "Manga-App.Presentation\Manga-App.Presentation.csproj", "{3941974A-776B-44FC-9FB8-44A63F54EB06}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-item", "solution-item", "{70904707-8D14-4A1B-AF0E-9284C5A3716E}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.dev.infa.yaml = docker-compose.dev.infa.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

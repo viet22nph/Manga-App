@@ -30,6 +30,9 @@ builder.Services.AddMediatRApplication();
 builder.Services.AddAws(builder.Configuration);
 builder.Services.AddServicePersitence();
 builder.Services.AddQuartzJob();
+
+builder.Services.AddMasstransitConfigurationRabbitMq(builder.Configuration);
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
